@@ -7,7 +7,14 @@ from pysnmpcrypto import (
     backend, CRYPTOGRAPHY, generic_decrypt, generic_encrypt)
 
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.ciphers import algorithms, Cipher, modes
+from cryptography.hazmat.primitives.ciphers import algorithms, Cipher
+
+try:
+    # cryptography 47 moved CFB to the decrepit module and deprecated
+    # the alias in the modes module
+    from cryptography.hazmat.decrepit.ciphers.modes import CFB
+except ImportError:
+    from cryptography.hazmat.primitives.ciphers.modes import CFB
 
 
 def _cryptography_cipher(key, iv):
@@ -20,7 +27,7 @@ def _cryptography_cipher(key, iv):
     """
     return Cipher(
         algorithm=algorithms.AES(key),
-        mode=modes.CFB(iv),
+        mode=CFB(iv),
         backend=default_backend()
     )
 
